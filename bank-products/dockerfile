@@ -1,0 +1,29 @@
+# Dockerfile
+
+# Utilizamos una imagen base de Node.js
+FROM node:18
+
+# Establecemos el directorio de trabajo en el contenedor
+WORKDIR /app
+
+# Copiamos package.json y package-lock.json (si existe)
+COPY package*.json ./
+
+# Instalamos las dependencias
+RUN npm install
+
+# Copiamos el resto del código de la aplicación
+COPY . .
+
+# Establecemos la variable de entorno para diferenciar entre dev y prod
+ARG NODE_ENV
+ENV NODE_ENV $NODE_ENV
+
+# Si es producción, construimos la aplicación
+RUN if [ "$NODE_ENV" = "production" ]; then npm run build; fi
+
+# Exponemos el puerto en el que la aplicación se ejecutará
+EXPOSE 3000
+
+# Comando para correr la aplicación
+CMD ["npm", "run", "start:dev"]
