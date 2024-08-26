@@ -6,12 +6,21 @@ const SearchClient: React.FC = () => {
   const [clientId, setClientId] = useState('');
   const [clientType, setClientType] = useState<ClientType>(ClientType.CC);
   const navigate = useNavigate();
+
+  const handleClientIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setClientId(value);
+    }
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (clientId && clientType) {
       navigate(`/products?clientType=${clientType}&clientId=${clientId}`);
     }
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
@@ -29,7 +38,7 @@ const SearchClient: React.FC = () => {
           <input
             type="text"
             value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
+            onChange={handleClientIdChange}
             placeholder="Número de Documento"
             className="w-full px-3 py-2 border rounded-md"
             required

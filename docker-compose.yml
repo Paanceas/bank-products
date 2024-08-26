@@ -40,17 +40,15 @@ services:
   bank-products:
     build:
       context: ./bank-products
-      args:
-        NODE_ENV: ${NODE_ENV}  # Pasa el entorno al Dockerfile
     container_name: bank-products-container
     working_dir: /app
     volumes:
-      - ./bank-products:/app  # Mapea el código fuente local dentro del contenedor
+      - ./bank-products:/app
       - /app/node_modules
     ports:
       - "3000:3000"
     env_file:
-      - ./bank-products/.env  # Carga el archivo .env correspondiente
+      - ./bank-products/.env
     depends_on:
       - mongo
     command: >
@@ -60,22 +58,18 @@ services:
 
   bank-app:
     build:
-      context: ./bank-app  # Ruta a la carpeta del frontend
-      args:
-        NODE_ENV: ${NODE_ENV}  # Pasa el entorno al Dockerfile
+      context: ./bank-app
     container_name: bank-app-container
     working_dir: /app
     volumes:
-      - ./bank-app:/app  # Mapea el código fuente local dentro del contenedor
+      - ./bank-app:/app
       - /app/node_modules
     ports:
-      - "5173:5173"  # Puerto donde corre Vite por defecto
+      - "5173:3000"
     env_file:
-      - ./bank-app/.env  # Carga el archivo .env correspondiente
+      - ./bank-app/.env
     depends_on:
       - bank-products
-    command: >
-      sh -c "npm install && if [ \"${NODE_ENV}\" = \"production\" ]; then npm run build && npm run preview; else npm run dev; fi"
     networks:
       - app-network
 
