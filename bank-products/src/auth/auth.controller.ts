@@ -1,20 +1,13 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Response } from 'express';
+import { Controller, Get, Query, Res } from '@nestjs/common';
+import { AuthService } from './auth.service';
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
-  @Get('login')
-  @UseGuards(AuthGuard('oauth2'))
-  login() {
-    // Este endpoint redirige a Auth0 para autenticación
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Get('callback')
-  @UseGuards(AuthGuard('oauth2'))
-  callback(@Req() req, @Res() res: Response) {
-    const user = req.user;
-    const accessToken = user?.accessToken;
-    return res.redirect(`http://localhost:4200?token=${accessToken}`);
+  async callback(@Query('code') code: string, @Res() res) {
+    const token = await this.authService.getAccessToken(code);
+    return res.redirect(`http://localhost:4200?token=${token.access_token}`);
   }
 }
