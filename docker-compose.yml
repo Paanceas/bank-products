@@ -58,6 +58,27 @@ services:
     networks:
       - app-network
 
+  bank-app:
+    build:
+      context: ./bank-app  # Ruta a la carpeta del frontend
+      args:
+        NODE_ENV: ${NODE_ENV}  # Pasa el entorno al Dockerfile
+    container_name: bank-app-container
+    working_dir: /app
+    volumes:
+      - ./bank-app:/app  # Mapea el código fuente local dentro del contenedor
+      - /app/node_modules
+    ports:
+      - "5173:5173"  # Puerto donde corre Vite por defecto
+    env_file:
+      - ./bank-app/.env  # Carga el archivo .env correspondiente
+    depends_on:
+      - bank-products
+    command: >
+      sh -c "npm install && if [ \"${NODE_ENV}\" = \"production\" ]; then npm run build && npm run preview; else npm run dev; fi"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
